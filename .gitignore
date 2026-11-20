@@ -1,0 +1,14 @@
+.venv/
+data/
+data_transfer/
+tmp/
+logs/
+results/
+cache/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+*.part
+*.zip
+*.pdf

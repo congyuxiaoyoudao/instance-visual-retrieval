@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "instance-visual-retrieval"
+version = "0.1.0"
+description = "Revisited Oxford/Paris instance retrieval course assignment"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24,<2", "scipy>=1.11,<1.16", "pillow>=10", "torch>=2.2", "torchvision>=0.17", "transformers>=4.46,<5", "opencv-python-headless>=4.9,<4.12", "faiss-cpu>=1.8", "matplotlib>=3.8", "pandas>=2,<3", "pyarrow>=16,<20", "tqdm>=4.66", "gradio>=5.49,<6", "nbformat>=5", "nbclient>=0.10", "ipykernel>=6", "ipywidgets>=8", "pytest>=8"]
+
+[project.scripts]
+ivr = "instance_retrieval.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["instance_retrieval*"]
+
+[tool.setuptools.package-data]
+instance_retrieval = ["vendor/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["infrastructure: provided helpers", "coursework: student implementation contracts"]
+
