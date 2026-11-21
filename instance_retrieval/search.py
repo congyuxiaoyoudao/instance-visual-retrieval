@@ -11,7 +11,9 @@ def cosine_search(database, queries):
     Use decreasing similarity, stable ties (database index order), and complete rankings.
     Handle zero vectors without NaNs; do not mutate inputs. The supplied normalize helper is available."""
     # TODO(P2): implement according to the contract above.
-    raise NotImplementedError("P2: cosine_search")
+    scores = np.dot(normalize(database), normalize(queries).T) # N Q
+    ranks = np.argsort(-scores, axis=0, kind='stable') 
+    return ranks, scores
 
 def benchmark_search(database, queries, repeats=3):
     database, queries = normalize(database), normalize(queries)

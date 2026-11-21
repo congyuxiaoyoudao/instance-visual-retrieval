@@ -9,7 +9,27 @@ def protocol_ground_truth(gnd, protocol):
     Follow the assignment protocol; reject unsupported protocols with ValueError.
     Do not mutate gnd and do not implement AP yourself."""
     # TODO(P1): implement according to the contract above.
-    raise NotImplementedError("P1: protocol_ground_truth")
+    if protocol not in ("medium", "hard"):
+        raise ValueError(f"Unsupported protocol type: {protocol}")
+
+    truth = []
+    for q in gnd: # each query match a dict
+        easy = np.asarray(q.get("easy", []), dtype=int)
+        hard = np.asarray(q.get("hard", []), dtype=int)
+        junk = np.asarray(q.get("junk", []), dtype=int)
+
+        if protocol == "medium":
+            ok = np.concatenate([easy, hard])
+            jnk = junk
+        else:  # hard
+            ok = hard
+            jnk = np.concatenate([easy, junk])
+
+        truth.append({
+            "ok": ok,
+            "junk": jnk,
+        })
+    return truth
 
 def evaluate(ranks, gnd):
     ranks = np.asarray(ranks)
