@@ -107,4 +107,20 @@ def pool_dino_tokens(tokens, pooling="cls", p=3.0, eps=1e-6):
     Models and preprocessing are provided; this helper must work on CPU tensors.
     """
     # TODO(P3): implement CLS and GeM aggregation.
-    raise NotImplementedError("P3: pool_dino_tokens")
+    if pooling not in ("cls", "gem"):
+        raise ValueError("DINO pooling must be cls or gem")
+
+    pooled = []
+    if pooling == "cls":
+        pooled = tokens[:,0,:] # select cls token
+    else:
+        if p<=0:
+            raise ValueError(f"p must be positive, current value: {p}")
+        tokens = torch.clamp(tokens, min=eps) # clamp for numerical stability
+        # GeM pooling: f = ((1/N) * sum(x_i^p)) ^ (1/p)
+        patch_tokens = tokens[:,1:,:] # B T D
+        pooled = torch.mean(patch_tokens.pow(p), dim=1).pow(1.0/p) # compute mean along T dim, i.e. patch dim 
+
+    return pooled
+
+    
