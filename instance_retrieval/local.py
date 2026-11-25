@@ -90,7 +90,7 @@ def sample_descriptors(stores: LocalStore, count=1_000_000, seed=2026):
     rng = np.random.default_rng(seed)
     # we use a one pass reservoir method
     reservoir = np.empty((count, 128), dtype=np.float32)
-    filled = 0 # count how many elements have in our reservoir
+    seen = 0 # count how many elements we have seen
 
     for store in stores:
         for i in range(len(store.dataset.imlist)):
@@ -99,19 +99,19 @@ def sample_descriptors(stores: LocalStore, count=1_000_000, seed=2026):
                 continue
 
             for row in desc:
-                if filled < count:
+                if seen < count:
                     # stage 1: store elements
-                    reservoir[filled] = row.astype(np.float32)
-                    filled += 1
+                    reservoir[seen] = rootsift(row)
                 else:
                     # stage 2: replace elements
-                    j = rng.integers(0, filled + 1)
+                    j = rng.integers(0, seen + 1)
                     if j < count:
-                        reservoir[j] = row.astype(np.float32)
+                        reservoir[j] = rootsift(row)
+                seen += 1
 
-    if filled == 0:
+    if seen == 0:
         raise ValueError(f"The pool is empty")
-    return reservoir[:filled]
+    return reservoir[:seen]
 
 def train_vocabulary(sample, k, seed=2026, iterations=25):
     """Train an unsupervised vocabulary from float32 RootSIFT sample [M,128].
