@@ -101,17 +101,17 @@ def sample_descriptors(stores: LocalStore, count=1_000_000, seed=2026):
             for row in desc:
                 if seen < count:
                     # stage 1: store elements
-                    reservoir[seen] = rootsift(row)
+                    reservoir[seen] = row
                 else:
                     # stage 2: replace elements
                     j = rng.integers(0, seen + 1)
                     if j < count:
-                        reservoir[j] = rootsift(row)
+                        reservoir[j] = row
                 seen += 1
 
     if seen == 0:
         raise ValueError(f"The pool is empty")
-    return reservoir[:seen]
+    return rootsift(reservoir[:seen])
 
 def train_vocabulary(sample, k, seed=2026, iterations=25):
     """Train an unsupervised vocabulary from float32 RootSIFT sample [M,128].
@@ -155,18 +155,14 @@ def encode_vlad(descriptors, centers):
             residuals[k] += np.sum(root_desc[mask] - centers[k], axis=0)
 
     # inner cluster normalization
-    norms = np.linalg.norm(residuals, axis=1, keepdims=True)
-    norms[norms == 0] = 1 # prevent 0 division
-    residuals = residuals / norms
+    residuals = normalize(residuals)
 
     # signed square root
     residuals = np.sign(residuals) * np.sqrt(np.abs(residuals))
 
     # global normalization
     residuals_flat = residuals.reshape(-1)
-    global_norm = np.linalg.norm(residuals_flat)
-    if global_norm > 0:
-        residuals_flat = residuals_flat / global_norm
+    residuals_flat = normalize(residuals_flat)
 
     return residuals_flat
 
