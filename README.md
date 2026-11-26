@@ -74,3 +74,5 @@ python -m instance_retrieval.cli demo --port 17861
 ```
 
 Open http://127.0.0.1:17861 to visualize results.
+
+![demo](assets/demo.png)
